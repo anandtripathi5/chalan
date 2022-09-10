@@ -1,19 +1,16 @@
 import os
-import sys
-from configparser import ConfigParser
+from configparser import SafeConfigParser
 from os import path
-
-import typer
 
 from constants import CONFIG_INI, MIGRATION_DIR
 from utils.exceptions import Exc
-from rich import print
 
 
 class Config:
     def __init__(self):
-        self.config = ConfigParser()
+        self.config = SafeConfigParser()
         self.directory = None
+        self._es = None
 
     def create_ini(self):
         if path.exists(CONFIG_INI):
@@ -21,8 +18,13 @@ class Config:
 
         self.config['CHALAN'] = dict(
             directory=MIGRATION_DIR,
-            path_prefix='./',
-            es_host='%(ES_HOST)s'
+            path_prefix='./'
+        )
+        self.config['ES'] = dict(
+            es_host='%(ES_HOST)s',
+            es_user='%(ES_USER)s',
+            es_pass='%(ES_PASS)s',
+            migration_index='chalan_versions'
         )
         self.config.write(open(CONFIG_INI, "w"))
 
@@ -36,3 +38,10 @@ class Config:
     @property
     def versions(self):
         return os.path.join(self.mig_dir, "versions")
+
+    @property
+    def es(self):
+        if not self._es:
+            self.config.read('ES')
+            self._es = self.config['ES']
+        return self._es

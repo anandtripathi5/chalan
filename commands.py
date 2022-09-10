@@ -6,13 +6,16 @@ from rich import print
 
 from config import Config
 from constants import CONFIG_INI
+from es import ESWrapper
 from utils import exceptions
 
-app = typer.Typer()
+app = typer.Typer(rich_markup_mode="rich")
 config = Config()
+es = ESWrapper(config)
 
 
-@app.command(help="Command to initialize Chalan with directory structure")
+@app.command(
+    help="Command to initialize [green bold]Chalan[/green bold] with directory structure")
 def init() -> None:
     """
     Initialize a new scripts directory.
@@ -29,7 +32,8 @@ def init() -> None:
 
     os.mkdir(config.mig_dir)
     os.mkdir(config.versions)
-
+    es.init()
+    es.create_version_index()
     print(
         "Please edit configuration/connection/logging "
         "settings in %r before proceeding." % CONFIG_INI
@@ -37,9 +41,10 @@ def init() -> None:
     print("Chalan initialized [green bold]successfully[/green bold]")
 
 
-@app.command()
-def first():
-    pass
+@app.command(help="Command to generate migration file")
+def revision(message: str = typer.Option(..., "--message", "-m",
+                                         help="message will be part of the migration file name")):
+    print(message)
 
 
 if __name__ == '__main__':
