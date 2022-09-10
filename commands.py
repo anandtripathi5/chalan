@@ -6,7 +6,7 @@ from rich import print
 
 from config import Config
 from constants import CONFIG_INI
-from es import ESWrapper
+from es_wrapper import ESWrapper
 from utils import exceptions
 
 app = typer.Typer(rich_markup_mode="rich")
