@@ -1,14 +1,25 @@
+import configparser
 import os
-from configparser import SafeConfigParser
 from os import path
 
-from constants import CONFIG_INI, MIGRATION_DIR
+from mako.template import Template
+
+from constants import CONFIG_INI, MIGRATION_DIR, VERSIONS_DIR
 from utils.exceptions import Exc
+
+
+class EnvInterpolation(configparser.BasicInterpolation):
+    """Interpolation which expands environment variables in values."""
+
+    def before_get(self, parser, section, option, value, defaults):
+        value = super().before_get(parser, section, option, value, defaults)
+        return os.path.expandvars(value)
 
 
 class Config:
     def __init__(self):
-        self.config = SafeConfigParser()
+        self.config = configparser.ConfigParser(
+            interpolation=EnvInterpolation())
         self.directory = None
         self._es = None
 
@@ -16,17 +27,9 @@ class Config:
         if path.exists(CONFIG_INI):
             Exc("Config file [red bold]%s[/red bold] already exists" % CONFIG_INI)
 
-        self.config['CHALAN'] = dict(
-            directory=MIGRATION_DIR,
-            path_prefix='./'
-        )
-        self.config['ES'] = dict(
-            es_host='%(ES_HOST)s',
-            es_user='%(ES_USER)s',
-            es_pass='%(ES_PASS)s',
-            migration_index='chalan_versions'
-        )
-        self.config.write(open(CONFIG_INI, "w"))
+        template = Template(filename='templates/chalan.ini.mako').render()
+        with open(CONFIG_INI, 'w') as f:
+            f.write(template)
 
     @property
     def mig_dir(self):
@@ -37,11 +40,11 @@ class Config:
 
     @property
     def versions(self):
-        return os.path.join(self.mig_dir, "versions")
+        return os.path.join(self.mig_dir, VERSIONS_DIR)
 
     @property
     def es(self):
         if not self._es:
-            self.config.read('ES')
+            self.config.read(CONFIG_INI)
             self._es = self.config['ES']
         return self._es

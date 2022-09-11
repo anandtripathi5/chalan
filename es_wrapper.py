@@ -7,6 +7,7 @@ from utils.exceptions import Exc
 class ESWrapper:
     def __init__(self, config: config.Config):
         self.config = config
+        self.client = None
 
     def init(self):
         self.client = Elasticsearch(
@@ -16,17 +17,22 @@ class ESWrapper:
         )
 
     def create_version_index(self):
-        if self.client.indices.exists(index=self.config.es['migration_index']):
-            Exc(f"Migration index [bold red]{self.config.es['migration_index']}[/bold red] already exists")
-
-        self.client.indices.create(
-            index=self.config.es['migration_index'],
-            mappings={"properties": {"version": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
+        if not self.client.indices.exists(
+                index=self.config.es['migration_index']):
+            self.client.indices.create(
+                index=self.config.es['migration_index'],
+                mappings={"properties": {"version": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
                     }
-                }
-            }}})
+                }}})
+
+    def current_version(self):
+        hits = self.client.search(index=self.config.es['migration_index'],
+                                  query=dict(match_all=dict()),
+                                  ignore=[404])['hits']['hits']
+        return hits and hits[0]['_source']['version'] or None
