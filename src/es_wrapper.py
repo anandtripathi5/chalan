@@ -1,7 +1,6 @@
 from elasticsearch import Elasticsearch
 
-import config
-from utils.exceptions import Exc
+from . import config
 
 
 class ESWrapper:

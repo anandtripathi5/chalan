@@ -5,8 +5,8 @@ from pydoc import importfile
 from rich import print
 from mako.template import Template
 
-from constants import VERSIONS_DIR
-from utils.exceptions import Exc
+from .constants import VERSIONS_DIR
+from .utils.exceptions import Exc
 
 
 class Migrate:
@@ -34,7 +34,8 @@ class Migrate:
         version = self.es.current_version()
         self._check_if_version_exists(version)
         revision = 1 if version is None else int(version) + 1
-        content = Template(filename='templates/script.py.mako').render(
+        content = Template(filename=os.path.dirname(
+            os.path.abspath(__file__)) + '/templates/script.py.mako').render(
             message=message,
             create_date=datetime.now(),
             down_revision=version,

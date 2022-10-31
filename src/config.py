@@ -4,8 +4,8 @@ from os import path
 
 from mako.template import Template
 
-from constants import CONFIG_INI, MIGRATION_DIR, VERSIONS_DIR
-from utils.exceptions import Exc
+from .constants import CONFIG_INI, VERSIONS_DIR
+from .utils.exceptions import Exc
 
 
 class EnvInterpolation(configparser.BasicInterpolation):
@@ -27,7 +27,8 @@ class Config:
         if path.exists(CONFIG_INI):
             Exc("Config file [red bold]%s[/red bold] already exists" % CONFIG_INI)
 
-        template = Template(filename='templates/chalan.ini.mako').render()
+        template = Template(filename=os.path.dirname(
+            os.path.abspath(__file__)) + '/templates/chalan.ini.mako').render()
         with open(CONFIG_INI, 'w') as f:
             f.write(template)
 

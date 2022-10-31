@@ -3,10 +3,10 @@ import os
 import typer
 from rich import print
 
-from config import Config
-from constants import CONFIG_INI
-from es_wrapper import ESWrapper
-from migrate import Migrate
+from .config import Config
+from .constants import CONFIG_INI
+from .es_wrapper import ESWrapper
+from .migrate import Migrate
 
 app = typer.Typer(rich_markup_mode="rich")
 config = Config()
