@@ -16,7 +16,7 @@ setup(
     packages=find_packages(),  # list of all packages,
     include_package_data=True,
     keyword="chalan, chalan elasticsearch tool, elasticsearch migration tool",
-    install_requires=['elasticsearch>8.0.0', 'typer==0.6.1', 'rich==12.5.1',
+    install_requires=['elasticsearch>8.0.0', 'typer>=0.6.1', 'rich>=12.5.1',
                       'Mako~=1.2.2'],
     entry_points='''
         [console_scripts]
