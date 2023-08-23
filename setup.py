@@ -7,7 +7,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 setup(
     name='chalan',
-    version='0.1.2',
+    version='0.1.3',
     description='Elasticsearch migrations tool',
     url='https://github.com/anandtripathi5/chalan',
     author='Anand Tripathi',
@@ -16,7 +16,7 @@ setup(
     packages=find_packages(),  # list of all packages,
     include_package_data=True,
     keyword="chalan, chalan elasticsearch tool, elasticsearch migration tool",
-    install_requires=['elasticsearch>8.0.0', 'typer==0.6.1', 'rich==12.5.1',
+    install_requires=['elasticsearch>8.0.0', 'typer>=0.6.1', 'rich>=12.5.1',
                       'Mako~=1.2.2'],
     entry_points='''
         [console_scripts]
