@@ -9,11 +9,18 @@ class ESWrapper:
         self.client = None
 
     def init(self):
-        self.client = Elasticsearch(
-            self.config.es['es_host'],
-            http_auth=(
-                self.config.es['es_user'], self.config.es['es_pass']),
-        )
+        api_key = self.config.es.get('es_api_key')
+        if api_key and not api_key.startswith("$"):
+            self.client = Elasticsearch(
+                self.config.es['es_host'],
+                api_key=api_key
+            )
+        else:
+            self.client = Elasticsearch(
+                self.config.es['es_host'],
+                http_auth=(
+                    self.config.es['es_user'], self.config.es['es_pass']),
+            )
 
     def create_version_index(self):
         if not self.client.indices.exists(
