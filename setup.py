@@ -7,7 +7,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 setup(
     name='chalan',
-    version='0.1.3',
+    version='0.1.4',
     description='Elasticsearch migrations tool',
     url='https://github.com/anandtripathi5/chalan',
     author='Anand Tripathi',
